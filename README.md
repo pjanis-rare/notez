@@ -13,3 +13,5 @@ On the notez:
 - Minor third intervals keep the vowel unchanged. Major third cyclically increments the vowel by one.
 - Each note has its own distinctive RGB color, and the colors are cyclic over the 12-note octave.
 - Color change of a half-step is perceptually equal length (TBD: perceptually uniform cyclic color scheme for the color blind).
+
+![notez](screen_capture.png)
