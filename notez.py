@@ -4,6 +4,7 @@ import numpy as np
 import pygame
 import pygame.locals
 
+from buttons import *
 import harmony
 import notation
 from synth import Synth
@@ -31,13 +32,16 @@ def __main__():
     note_queue = []
     base_note = TENOR_RANGE[12]
     scale = 'major'
+    system = 'notez_alt'
     second_time = False
     pygame.time.set_timer(BEATEVENT, 200)
     
     pygame.font.init()
     myfont = pygame.font.SysFont('Comic Sans MS', 24)
 
-    running = False
+    run_button = ToggleButton(1300, 500, 90, 30, text="run")
+    run_button.state = False
+    system_selector = SelectorButton(list(notation.NAME.keys()), 1300, 540, 90, 30)
     beat = 0
     # Main loop.
     while True:
@@ -47,12 +51,16 @@ def __main__():
             
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    running = not running
-            
-            if event.type == BEATEVENT and not running:
+                    run_button.state = not run_button.state
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                run_button.actuate(event.pos)
+                system_selector.actuate(event.pos)
+
+            if event.type == BEATEVENT and not run_button.state:
                 synth.stop(base_note, harmony.get_stack(base_note, scale))
             
-            if event.type == BEATEVENT and running:
+            if event.type == BEATEVENT and run_button.state:
                 if beat == BEATS - 1:
                     synth.stop(base_note, harmony.get_stack(base_note, scale))
                 elif beat == 0:
@@ -84,7 +92,9 @@ def __main__():
                 pygame.quit()
                 sys.exit()
     
-        # Update.
+        # Draw buttons.
+        run_button.draw(screen)
+        system_selector.draw(screen)
 
         # Draw harmony.
         note = base_note % 12
@@ -108,7 +118,7 @@ def __main__():
 
         # Draw notes.
         for note in range(12, 68):
-            textsurface = myfont.render(notation.get_name(note)[0], True, (0, 0, 0))
+            textsurface = myfont.render(notation.get_name(note, system_selector.state)[0], True, (0, 0, 0))
             positions, replica_indices = POSITIONS[note]
             for p in positions:
                 pygame.draw.circle(screen, notation.get_color(note), p * height,
@@ -116,7 +126,7 @@ def __main__():
                 )
                 screen.blit(textsurface, p * height - 17)
             pass
-        textsurface = myfont.render(notation.get_name(base_note)[0], False, (255, 0, 0))
+        textsurface = myfont.render(notation.get_name(base_note, system_selector.state)[0], False, (255, 0, 0))
         screen.blit(textsurface,(1200,0))
 
         pygame.display.flip()

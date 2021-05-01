@@ -2,36 +2,11 @@ import cmocean.cm
 import numpy as np
 
 
-NAME = [
-    "ki",
-    "ko",
-    "ku",
-    "li",
-    "lo",
-    "lu",
-    "vi",
-    "vo",
-    "vu",
-    "mi",
-    "mo",
-    "mu",
-]
-
-
-NAME2 = [
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-]
+NAME = {
+    'notez': ["ki", "ko", "ku", "li", "lo", "lu", "vi", "vo", "vu", "mi", "mo", "mu",],
+    'notez_alt': ["ki", "vo", "lu", "mi", "ko", "vu", "li", "mo", "ku", "vi", "lo", "mu",],
+    'trad': ["Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G",],
+}
 
 
 DIV = 24
@@ -49,10 +24,10 @@ def get_color(note: int):
     return r, g, b
 
 
-def get_name(note: int):
+def get_name(note: int, system: str):
     n = note % 12
     octave = note // 12
-    name = NAME[n]
+    name = NAME[system][n]
 
     return name, octave
 
