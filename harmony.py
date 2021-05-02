@@ -3,8 +3,8 @@ import numpy as np
 
 SCALES = {
     'major': [2, 2, 1, 2, 2, 2, 1],
-    'mixolydian': [2, 2, 1, 2, 2, 1, 2],
     'dorian': [2, 1, 2, 2, 2, 1, 2],
+    'mixolydian': [2, 2, 1, 2, 2, 1, 2],
 }
 
 

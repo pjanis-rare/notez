@@ -31,8 +31,6 @@ def __main__():
     synth = Synth(44000)
     note_queue = []
     base_note = TENOR_RANGE[12]
-    scale = 'major'
-    system = 'notez_alt'
     second_time = False
     pygame.time.set_timer(BEATEVENT, 200)
     
@@ -42,6 +40,7 @@ def __main__():
     run_button = ToggleButton(1300, 500, 90, 30, text="run")
     run_button.state = False
     system_selector = SelectorButton(list(notation.NAME.keys()), 1300, 540, 90, 30)
+    scale_selector = SelectorButton(list(harmony.SCALES.keys()), 1300, 640, 90, 30)
     beat = 0
     # Main loop.
     while True:
@@ -56,36 +55,37 @@ def __main__():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 run_button.actuate(event.pos)
                 system_selector.actuate(event.pos)
+                scale_selector.actuate(event.pos)
 
             if event.type == BEATEVENT and not run_button.state:
-                synth.stop(base_note, harmony.get_stack(base_note, scale))
+                synth.stop(base_note, harmony.get_stack(base_note, scale_selector.state))
             
             if event.type == BEATEVENT and run_button.state:
                 if beat == BEATS - 1:
-                    synth.stop(base_note, harmony.get_stack(base_note, scale))
+                    synth.stop(base_note, harmony.get_stack(base_note, scale_selector.state))
                 elif beat == 0:
                     #if not note_queue:
                     #    note_queue = TENOR_RANGE.copy()[::-1]
                     #    #np.random.shuffle(note_queue)
                     #base_note = note_queue.pop()
-                    if scale == 'dorian':
-                        scale = 'mixolydian'
+                    if scale_selector.state == 'dorian':
+                        scale_selector.set_state('mixolydian')
                         base_note -= 7
-                    elif scale == 'mixolydian':
-                        scale = 'major'
+                    elif scale_selector.state == 'mixolydian':
+                        scale_selector.set_state('major')
                         base_note += 5
                         second_time = False
-                    elif scale == 'major':
+                    elif scale_selector.state == 'major':
                         if not second_time:
                             second_time = not second_time
                         else:
-                            scale = 'dorian'
+                            scale_selector.set_state('dorian')
                             if base_note == TENOR_RANGE[0]:
                                 base_note += 11
                             elif base_note < TENOR_RANGE[0]:
                                 base_note += 13
                             #base_note +=2
-                    synth.play(base_note, harmony.get_stack(base_note, scale))
+                    synth.play(base_note, harmony.get_stack(base_note, scale_selector.state))
                 beat = (beat + 1) % BEATS
             
             if event.type == pygame.locals.QUIT:
@@ -95,13 +95,14 @@ def __main__():
         # Draw buttons.
         run_button.draw(screen)
         system_selector.draw(screen)
+        scale_selector.draw(screen)
 
         # Draw harmony.
         note = base_note % 12
         for octave in range(4):
             stack_begin_note = base_note % 12 + 12 * octave
             positions, replica_indices = POSITIONS[stack_begin_note]
-            stack_notes = harmony.get_stack(stack_begin_note, scale)
+            stack_notes = harmony.get_stack(stack_begin_note, scale_selector.state)
             for stack_begin_pos, replica_idx in zip(positions, replica_indices):
                 line_start = stack_begin_pos
                 next_replica = replica_idx + 1

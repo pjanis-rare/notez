@@ -41,10 +41,15 @@ class SelectorButton:
                 continue
             button.actuate(mouse_pos)
             if button.state:
-                self.state = choice
-                for other_button in self.buttons:
-                    if other_button != choice:
-                        self.buttons[other_button].state = False
+                self.set_state(choice)
+
+    def set_state(self, choice):
+        self.state = choice
+        self.buttons[choice].state = True
+        for other_button in self.buttons:
+            if other_button != choice:
+                self.buttons[other_button].state = False
+
 
     def draw(self, screen):
         for button in self.buttons.values():
